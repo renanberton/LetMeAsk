@@ -1,7 +1,5 @@
 /* Dependências */
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
-import { AuthContext } from '../App';
 
 /* Imagens */
 import illustrationImg from '../assets/images/illustration.svg';
@@ -13,17 +11,20 @@ import '../styles/auth.scss'
 
 /* Componentes */
 import { Button } from '../components/Button'
+import { useAuth } from '../hooks/useAuth';
 
 
+/* Página Home */
 export function Home() {
     /* Função que habilita a navegação entre páginas */
     const history = useNavigate();
     /* Função que fará a o login com o Google, e pegará seu contexto */
-    const { user, signInWithGoogle } = useContext(AuthContext)
+    const { user, signInWithGoogle } = useAuth();
 
     /* Função da Página NewRoom */
     function handleCreateRoom() {
         /* Se o usuário não logar, ficará no login do Google */
+        /* E não passará para a page NewRoom */
         if (!user) {
             signInWithGoogle();
         }
