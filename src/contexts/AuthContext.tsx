@@ -1,10 +1,11 @@
+/* Dependências */
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { auth, firebase } from '../services/firebase'
 
 /* Pegará os dados do usuário cadastrado */
 export const AuthContext = createContext({} as AuthContextType);
 
-/* Tipagem para User */
+/* Tipagem para os dados de User */
 type User = {
     id: string;
     name: string;
@@ -23,6 +24,7 @@ type AuthContextProviderProps = {
 }
 
 /* E passamos o props aqui */
+/* E a função será exportada para ser importada no App */
 export function AuthContextProvider(props: AuthContextProviderProps) {
 
     /* Variáveis para armazenar os dados do usuário */
@@ -33,6 +35,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       E um array
       É um eventListener change, se houver mudanças, ele dispara a função 
       de autenticação e fica com os dados salvos, mesmo dando F5
+      Recupera as informações do usuário que já foi logado.
     */
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
