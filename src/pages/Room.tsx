@@ -109,9 +109,7 @@ export function Room() {
             throw new Error('Você precisa estar logado para esta ação.')
         }
 
-        /* Variável que irá armazenar o conteúdo da pergunta do usuário.
-        Junto do seu nome e foto de usuário.
-        */
+        /* Variável que irá armazenar o conteúdo da pergunta do usuário. Junto do seu nome e foto de usuário. */
         const question = {
             content: newQuestion,
             author: {
@@ -119,16 +117,12 @@ export function Room() {
                 avatar: user.avatar,
             },
 
-            /* Se a pergunta está sendo respondida atualmente.
-            E se já foi respondida ou não.
-            */
+            /* Se a pergunta está sendo respondida atualmente. E se já foi respondida ou não. */
             isHighlighted: false,
             isAnswered: false,
         };
 
-        /* Salvará as informações no banco de dados
-        Adicionará a questão no database na URL questions
-        */
+        /* Salvará as informações no banco de dados e Adicionará a questão no database na URL questions */
         await database.ref(`rooms/${roomId}/questions`).push(question);
 
         /* Ao enviar a pergunta, isso aqui 'esvazia' o campo da pergunta, deixando o campo em branco */
@@ -141,9 +135,7 @@ export function Room() {
             <header>
                 <div className='content'>
                     <img src={logoImg} alt="Logo LetMeAsk" />
-                    {/* Parte responsável por exibir o código da sala no front-end 
-                    E que ao clicar no elemento, salva o valor no clipboard
-                    */}
+                    {/* Parte responsável por exibir o código da sala no front-end E que ao clicar no elemento, salva o valor no clipboard */}
                     <RoomCode code={roomId} />
                 </div>
             </header>
@@ -163,10 +155,7 @@ export function Room() {
                     />
                     <div className="form-footer">
                         {/* Condicional ternária
-                    Se o usuário estiver logado, será exibido seu avatar e o seu user.name
-                    Caso não estiver logado, será exibido 'Para enviar uma pergunta, faça seu login'
-
-                    */}
+                    Se o usuário estiver logado, será exibido seu avatar e o seu user.name Caso não estiver logado, será exibido 'Para enviar uma pergunta, faça seu login' */}
                         {user ? (
                             <div className="user-info">
                                 <img src={user.avatar} alt={user.name} />
