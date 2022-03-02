@@ -46,14 +46,10 @@ export function Home() {
             return;
         }
 
-        /* Variável responsável por armazenar o código da sala.
-        Que será procurado no banco de dados, pelo get()
-        */
+        /* Variável responsável por armazenar o código da sala. Que será procurado no banco de dados, pelo get() */
         const roomRef = await database.ref(`rooms/${roomCode}`).get()
 
-        /* Caso a sala não existe, ele retorna a mensagem
-        Avisando que a sala não existe.
-        */
+        /* Caso a sala não existe, ele retorna a mensagem Avisando que a sala não existe. */
         if (!roomRef.exists()) {
             alert('A sala especificada não existe.');
         } else {
@@ -61,6 +57,11 @@ export function Home() {
             history(`/rooms/${roomCode}`)
         }
 
+        /* Caso a sala tenha sido encerrada, retornará a mensagem avisando o usuário */
+        if (roomRef.val().endedAt) {
+            alert('Esta sala já foi encerrada.');
+            return;
+        }
     }
 
     /* Que retornará esse HTML */

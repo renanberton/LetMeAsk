@@ -43,6 +43,7 @@ export function NewRoom() {
             authorId: user?.id,
         })
 
+        /* Cria a rota para a sala, a partir do código da mesma. */
         history(`/rooms/${firebaseRoom.key}`);
     }
 
