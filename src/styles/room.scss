@@ -116,3 +116,41 @@
     }
 
 }
+
+@media only screen and (max-width: 987px) {
+    main {
+        padding: 0 50px;
+    }
+
+    #page-room main form .form-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+    }
+
+    .room-title {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .question-list {
+        margin-bottom: 100px;
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .content>div {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content>div>button:nth-last-child(1) {
+        width: 50%;
+        margin: 0 auto;
+    }
+}

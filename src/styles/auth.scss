@@ -2,6 +2,7 @@
     display: flex;
     align-items: stretch;
     height: 100vh;
+    flex-wrap: wrap;
 
     aside {
         flex: 7;
@@ -37,6 +38,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        min-width: 500px;
     }
 
     .main-content {
@@ -135,5 +137,16 @@
             background: #a8a8b3;
             margin-left: 16px;
         }
+    }
+}
+
+@media only screen and (max-width: 987px) {
+    #page-auth {
+        height: auto;
+    }
+
+    main {
+        height: auto;
+        margin: 100px auto;
     }
 }
