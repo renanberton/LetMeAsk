@@ -1,14 +1,3 @@
-/* Imagens */
-import logoImg from '../assets/images/logo.svg';
-import deleteImg from '../assets/images/delete.svg'
-
-/* Componentes */
-import { Button } from '../components/Button';
-import { RoomCode } from '../components/RoomCode';
-
-/* SCSS */
-import '../styles/room.scss';
-
 /* Dependências */
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -16,6 +5,21 @@ import { Question } from '../components/Question/index';
 import { useRoom } from '../hooks/useRoom';
 import { database } from '../services/firebase';
 import { useNavigate } from 'react-router-dom';
+
+
+/* Componentes */
+import { Button } from '../components/Button';
+import { RoomCode } from '../components/RoomCode';
+
+/* Imagens */
+import logoImg from '../assets/images/logo.svg';
+import deleteImg from '../assets/images/delete.svg'
+import checkImg from '../assets/images/check.svg'
+import answerImg from '../assets/images/answer.svg'
+
+/* SCSS */
+import '../styles/room.scss';
+
 
 
 /* Tipagem para pegar o parâmetro ID da sala */
@@ -50,6 +54,19 @@ export function AdminRoom() {
         history('/');
     }
 
+    /* Função responsável por exibir que a pergunta já foi respondida */
+    async function handleCheckQuestionAsAnswered(questionId: string) {
+        await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+            isAnswered: true,
+        });
+    }
+
+    /* Função responsável por exibir que a pergunta está em destaque */
+    async function handleHighlightQuestion(questionId: string) {
+        await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+            isHighLighted: true,
+        });
+    }
 
     /* Função responsável por deletar a pergunta no AdminRoom O usuário confirma se quer ou não deletar a pergunta */
     async function handleDeleteQuestion(questionId: string) {
@@ -84,8 +101,34 @@ export function AdminRoom() {
                                 key={question.id}
                                 content={question.content}
                                 author={question.author}
+                                isAnswered={question.isAnswered}
+                                isHighLighted={question.isHighLighted}
                             >
-                                <button
+                                {/* Condicional, caso a resposta não esteja respondida, ele exibe os botões
+                                Caso ela for respondida, os botões não serão + exibidos em tela
+                                */}
+                                {!question.isAnswered && (
+                                    /* Isso <> é um fragmento, é um elemento que só aparece no React e não é exibido no HTML
+                                    Estamos usando ele, pois para exibir 2 elementos um do lado do outro, eles precisam estar 'isolados' por containers
+                                    E se agente add uma div, ela quebra o CSS, por isso usaremos o fragmento <>
+                                    */
+                                    <>
+                                        {/* Botão para marcar como respondida */}
+                                        < button type='button'
+                                            onClick={() => handleCheckQuestionAsAnswered(question.id)}>
+                                            <img src={checkImg} alt="Marcar Pergunta como respondida" />
+                                        </button>
+                                        {/* Botão para marcar a pergunta como destaque */}
+                                        <button
+                                            type='button'
+                                            onClick={() => handleHighlightQuestion(question.id)}>
+                                            <img src={answerImg} alt="Dar destaque a pergunta" />
+                                        </button>
+                                    </>
+                                )
+                                }
+                                {/* Botão para remover a pergunta */}
+                                < button
                                     type='button'
                                     onClick={() => handleDeleteQuestion(question.id)}>
                                     <img src={deleteImg} alt="Remover Pergunta" />
@@ -94,7 +137,7 @@ export function AdminRoom() {
                         );
                     })}
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     )
 }

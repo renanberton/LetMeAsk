@@ -60,7 +60,7 @@ export function Home() {
         /* Caso a sala tenha sido encerrada, retornará a mensagem avisando o usuário */
         if (roomRef.val().endedAt) {
             alert('Esta sala já foi encerrada.');
-            return;
+            history('/');
         }
     }
 

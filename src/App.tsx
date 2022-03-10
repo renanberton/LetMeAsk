@@ -17,8 +17,8 @@ function App() {
     <BrowserRouter>
       {/* Todas as pages terão acesso aos dados do usuário logado e poderão fazer o login com o Google */}
       {/* Pois terá + de 1 local para o usuário fazer log-in */}
-      {/* As rotas da aplicação */}
       <AuthContextProvider>
+        {/* As rotas da aplicação */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/rooms/new" element={<NewRoom />} />
