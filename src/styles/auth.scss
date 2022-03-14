@@ -143,6 +143,8 @@
 @media only screen and (max-width: 987px) {
     #page-auth {
         height: auto;
+        overflow-x: hidden;
+        justify-content: center;
     }
 
     main {
