@@ -1,0 +1,326 @@
+Vamos criar regras de segurança, para o usuário poder criar salas apenas se estiver logado.
+
+Fluxo de criação de salas.
+
+A criação de sala será feita por usuário autenticado.
+
+Para usar a sala não precisa estar autenticado, apenas para enviar perguntas.
+
+Quando temos funções que serão usadas em várias páginas, criamos um hook.
+
+Um hook sempre começa com use.
+
+O realtime database tem uma estrutura livre (schemma free) que podemos alterá-la da nossa forma.
+
+o firestore database é + engessado igual os bancos de dados convencionais.
+
+
+CRIAÇÃO DE SALA
+
+Na Home.tsx temos uma função handleCreateRoom() que é quando o usuário clica em "Crie salas com google"
+A função verifica se o usuário está logado, caso não esteja, ela abre o popup para o usuario logar e só da sequencia na função
+após o usuário logar.
+
+Na função NewRoom() iremos add uma async function handleCreateRoom () e no form com onSubmit = { handleCreateRoom }
+A função de submit deve ser integrada sempre no form e não no botão, pois se a pessoa der ENTER o submit será enviado
+mesmo sem clicar no botão.
+
+Ao enviar um submit num formulário o HTML sempre envia o usuário para alguma página, por isso iremos passar um parãmetro na função
+
+async function handleCreateRoom(event) {
+O Typescript alega que não sabe daonde vem esse event.
+Então importamos o { FormEvent } from 'react' para usar como props da função
+E isso já faz com que o IDE nos de várias opções para o event.
+
+async function handleCreateRoom(event: FormEvent) {
+event.preventDefault();
+}
+
+Agora precisamos armazenar o nome digitado para ser o nome da sala pelo usuário.
+A forma mais usada no React é armazenar via useState()
+
+Então criamos uma variável 
+
+const [newRoom, setNewRoom] = useState('');
+
+Que será para armezenar o nome da sala digitado pelo usuário para criação da mesma
+Ai no input, add o atributo onChange = { event => setNewRoom(event.target.value))} 
+
+Agora iremos começar a usar o database do firebase.
+
+As referências é como se fossem uma linha no banco de dados convencional.
+importamos o database from firebase
+
+e criamos a variavel const roomRef = database.ref('rooms');
+
+Que é para add 1 sala em 'rooms' instanciada por roomRef();
+Que conterá os campos de title com o titulo salvo anteriormente e o ID do usuário.
+const firebaseRoom = await roomRef.push({
+            title: newRoom,
+            authorId: user?.id,
+        })
+
+Ao tentar criar a sala, deu um erro de PERMISSION DENIED
+Fomos nas Regras do banco de dados e alteramos o write e o read para true (O que não é recomendado, pois qualquer um pode
+fazer alterações no banco de dados)
+Porém, agora, ao criar uma sala, já salvou no banco de dados as informações que desejamos.
+Podemos visualizar as informações lá no firebase database no site.
+
+Agora, iremos criar uma regra, que só quem criou a sala pode fazer certas alterações na mesma.
+
+Criamos uma page em '/pages/' chamada Room.tsx que exibe somente um h1 com o nome Sala
+
+E no App.tsx criamos uma rota para a page Room
+/* o :id é para indicar que a URL irá receber o id lá do banco de dados" 
+<Route path="/rooms/:id" element={<NewRoom />} />
+
+Ainda em NewRoom() {
+criamos uma variavel responsável pela navegação do app:
+
+const history = useNavigate();
+
+    async function handleCreateRoom(event: FormEvent) {
+        /* Previne o comportamento padrão do form */
+        event.preventDefault();
+
+        if (newRoom.trim() === '') {
+            return;
+        }
+
+        /* Parecido com uma linha dos dbs convencionais */
+        const roomRef = database.ref('rooms');
+
+        /* O push, funciona para add 1 nova sala em 'rooms' la no banco de dados
+        , instanciado por roomRef que salvará o título salvo por roomRef(), + o id do usuário.
+        */
+        const firebaseRoom = await roomRef.push({
+            title: newRoom,
+            authorId: user?.id,
+        })
+
+E caso de tudo certo, ele redireciona o usuário para a url com o firebase key da sala. 
+        history(`/rooms/${firebaseRoom.key}`);
+
+
+Na home.tsx após a funçao enviar o usuário para '/rooms/new', criamos outra async function handleJoinRoom ()
+async function handleJoinRoom(event: FormEvent) {
+    event.preventDefault();
+}
+
+E add no form onSubmit={handleJoinRoom}
+e no input    
+onChange={event => setRoomCode(event.target.value)}
+value={roomCode}
+
+Ai a funão ficou assim :
+
+async function handleJoinRoom(event: FormEvent) {
+        event.preventDefault();
+
+        if (roomCode.trim() === '') {
+            return;
+        }
+
+        /* Variável responsável por verificar se a sala que o usuário deseja entrar, realment existe */
+        const roomRef = await database.ref(`rooms/${roomCode}`).get()
+
+        /* Caso a sala não existe, ele retorna a mensagem
+        Avisando que a sala não existe.
+        */
+        if (!roomRef.exists()) {
+            alert('A sala especificada não existe.');
+        } else {
+            /* Caso exista, o usuário será redirecionado para a sala */
+            history(`/rooms/${roomCode}`)
+        }
+
+    }
+
+O database está reclamando que o banco de dados está liberado para alteração e leitura por qualquer um.
+Por isso, iremos criar regras para ele.
+
+
+Para ler o id de uma sala, qualquer usuário pode.
+Para criar uma sala o usuário precisa estar logado e não existir uma sala com o mesmo nome
+Para editar uma sala, o usuário precisa ter logado, não existir a mesma sala, e o usuário precisa ser o mesmo que criou a sala
+Para ler os likes, qualquer um pode ler.
+Para dar like tem que estar logado, não pode ter dado like já, e para remover, o
+
+{
+  "rules": {
+	"rooms": {
+    ".read": false,
+    ".write": "auth != null",
+    "$roomId": {
+      ".read": true,
+      ".write": "auth != null && (!data.exists() || data.child('authorId').val() == auth.id)",
+      "questions": {
+      ".read": true,
+      ".write": "auth != null && (!data.exists() || data.parent().child('authorId').val() == auth.id)",
+      "likes": {
+      ".read": true,
+      ".write": "auth != null && (!data.exists() || data.child('authorId').val() == auth.id)",
+      }
+      }
+    }
+  }
+  }
+}
+
+Agora iremos criar a sala em html e css
+
+Criamos a estrutura com html e estilizamos com css (Até ai sem novidades)
+
+Sala criada e estilizada, porém tem um elemento que irá pegar o código da sala para exibir no html.
+E criaremos essa funcionalidade separado do HTML, pois nao tem nada a ver uma coisa com a outra, e pode poluir o código.
+
+Então criamos o RoomCode.tsx
+
+/* Imagens */
+import { ProgressPlugin } from 'webpack';
+import copyImg from '../assets/images/copy.svg';
+
+/* Estilo SCSS */
+import '../styles/room-code.scss';
+
+
+/* Tipagem para o RoomCode */
+type RoomCodeProps = {
+    code: any,
+}
+
+
+/* Função para copiar o código da sala para o Clipboard
+Ou para o famoso Ctrl + C
+*/
+export function RoomCode(props: RoomCodeProps) {
+    function copyRoomCodeToClipBoard() {
+        navigator.clipboard.writeText(props.code);
+    }
+
+    return (
+        /* Ao clicar, ele chama a função copyRoomCodeToClipBoard */
+        <button className="room-code" onClick={copyRoomCodeToClipBoard}>
+            <div>
+                <img src={copyImg} alt="Copiar o código da sala" />
+            </div>
+            <span>Sala #{props.code}</span>
+        </button>
+    )
+}
+
+E chamamos ele na página Room.tsx, que será responsável por exibir o código da sala no front-end e ao clica-lo
+copiar o valor para o clipboard
+
+No App.tsx, criamos a função para add as perguntas a aplicação
+
+/* Imagens */
+import logoImg from '../assets/images/logo.svg';
+
+/* Componentes */
+import { Button } from '../components/Button';
+import { RoomCode } from '../components/RoomCode';
+
+/* SCSS */
+import '../styles/room.scss';
+
+/* Dependências */
+import { useParams } from 'react-router-dom';
+import { FormEvent, useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { database } from '../services/firebase';
+
+
+/* Tipagem para pegar o parâmetro ID da sala */
+type RoomParams = {
+    id: string,
+}
+
+export function Room() {
+    /* Variável responsável por armazenar o parâmetro ID da sala
+    Que usa a tipagem RoomParams como referência
+    */
+    const params = useParams<RoomParams>();
+
+    /* Variável que armazena o ID da Sala */
+    const roomId = params.id;
+
+    /* Variáveis responsáveis por novas perguntas nas salas */
+    const [newQuestion, setNewQuestion] = useState('');
+
+    /* Variável que retorna a autenticação do usuário */
+    const { user } = useAuth();
+
+    /* Função responsável por enviar as perguntas ao app */
+    async function handleSendQuestion(event: FormEvent) {
+        event.preventDefault();
+
+        if (newQuestion.trim() === '') {
+            return;
+        }
+
+        /* Caso o usuário não estiver logado, retornará o seguinte erro: */
+        if (!user) {
+            throw new Error('Você precisa estar logado para esta ação.')
+        }
+
+        /* Variável que irá armazenar o conteúdo da pergunta do usuário.
+        Junto do seu nome e foto de usuário.
+        */
+        const question = {
+            content: newQuestion,
+            author: {
+                name: user?.name,
+                avatar: user.avatar,
+            },
+
+            /* Se a pergunta está sendo respondida atualmente.
+            E se já foi respondida ou não.
+            */
+            isHighlighted: false,
+            isAnswered: false,
+        };
+
+        /* Salvará as informações no banco de dados
+        Adicionará a questão no database na URL questions
+        */
+        await database.ref(`rooms/${roomId}/questions`).push(question);
+
+    }
+
+    return (
+        <div id="page-room">
+            <header>
+                <div className='content'>
+                    <img src={logoImg} alt="Logo LetMeAsk" />
+                    {/* Parte responsável por exibir o código da sala no front-end 
+                    E que ao clicar no elemento, salva o valor no clipboard
+                    */}
+                    <RoomCode code={roomId} />
+                </div>
+            </header>
+            <main>
+                <div className="room-title">
+                    <h1>Sala React</h1>
+                    <span>4 Perguntas</span>
+                </div>
+
+                {/* Ao enviar o submit, chamará a função handleSendQuestion */}
+                <form onSubmit={handleSendQuestion}>
+                    <textarea
+                        placeholder="Qual a sua dúvida ?"
+                        onChange={event => setNewQuestion(event.target.value)}
+                        value={newQuestion}
+                    />
+                    <div className="form-footer">
+                        <span>Para enviar uma pergunta,
+                            <button>Faça seu login.</button>
+                        </span>
+                        {/* O botão estará desativado caso o usuário não estiver logado */}
+                        <Button type="submit" disabled={!user}>Enviar Pergunta</Button> {/* Nosso Componente */}
+                    </div>
+                </form>
+            </main>
+        </div>
+    )
+}

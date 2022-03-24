@@ -1,0 +1,32 @@
+Iremos estilizar o html css das questões
+
+Criaremos um componente Question.tsx para componetizar essa função, pois será usada em + de 1 local pela aplicação.
+
+/* Tipagem para as questões */
+type QuestionProps = {
+    content: string;
+    author: {
+        name: string;
+        avatar: string;
+    }
+}
+
+export function Question({
+    content,
+    author,
+}: QuestionProps) {
+    return (
+        <div className="question">
+            <p>
+                {content}
+            </p>
+            <footer>
+                <div className="user-info">
+                    <img src={author.avatar} alt={author.name} />
+                    <span>{author.name}</span>
+                </div>
+                <div></div>
+            </footer>
+        </div>
+    );
+}

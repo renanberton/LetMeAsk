@@ -1,0 +1,101 @@
+Começamos pela AdminRoom, importando a checkImg e answerImg from images/
+E duplicando o botão de remover perguntas, 1 para cada img que será responsável por checar e responder a questão
+
+import checkImg from '../assets/images/check.svg'
+import answerImg from '../assets/images/answer.svg'
+
+<button type='button'
+onClick={() => handleDeleteQuestion(question.id)}>
+<img src={checkImg} alt="Remover Pergunta" />
+</button>
+<button
+type='button'
+onClick={() => handleDeleteQuestion(question.id)}>
+<img src={answerImg} alt="Remover Pergunta" />
+</button>
+<button
+type='button'
+onClick={() => handleDeleteQuestion(question.id)}>
+<img src={deleteImg} alt="Remover Pergunta" />
+</button>
+
+Agora falta fazer as funções para os botões novos
+Ao criar nome para funções, é melhor que o nome fique comprido, porém entendivel, do que curto e voce nao entenda o que faz.
+
+
+/* Função que exibe que a pergunta já foi respondida */
+    async function handleCheckQuestionAsAnswered(questionId: string) {
+        await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+            isAnswered: true,
+        });
+    }
+
+/* Função que exibe que a pergunta está em destaque */
+    async function handleHighlightQuestion(questionId: string) {
+        await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+            isHighLighted: true,
+        });
+    }
+
+Agora ao clicar nos icones na página de admin, os campos no banco de dados, ja ficam true.
+
+Criamos funções para verificar se a resposta já foi respondida ou foi destacada
+
+Caso tenha sido respondida ou destacada o React add a classe para estilizar os botões para exibir que ja foram
+respondidas/destacadas
+
+E criamos a condicional para caso a resposta tenha sido responsida, não é possível dar like na pergunta (os btns somem)
+
+Agora iremos hospedar o projeto
+
+Clicar em hosting na home do firebase
+
+Para hospedar sites no firebase, não é possível hospedar nenhum projeto que possua back-end (semelhante ao github)
+
+primeiramente, precisamos instalar a dependencia firebase-tools
+
+npm install -g firebase-tools
+
+ele vai instalar as dependencias, após isso dar next na página do firebase
+
+rodar o comando firebase login, irá abrir uma janela no browser para você logar na sua conta do google e selecionar a opção
+permitir - y
+
+firebase init
+
+Isso abrirá tipo umas opções no cmd para você escolher os serviços do firebase que você deseja utilizar
+
+nós usamos o realtime database e o hosting
+
+depois pergunta se deseja criar um novo projeto firebase, e como já temos um criado lá no fireabase, basta selecionar o mesmo
+
+as regras que criamos para o database é só escolher a que criamos
+
+e pergunta se quer que o projeto seja publico: build
+
+após isso pergunta se quer que faça auto deploy com github: ai vai da escolha de cada um, eu botei nao
+
+Ele add as rules e o json do firebase ao projeto
+
+nas rules tinha uma virgula sobrando // sempre verificar
+
+Agora temos o projeto pronto para publica-lo
+
+Precisamos configurar o cache HTTP do serviceworker ( para nao cachear o arquivo ) para aplicações PWA
+Porém no começo, a gente excluiu esse arquivo, entao nao precisamos esquentar com isso.
+Porém em outros casos, vale a pena confirmar essa questão.
+
+Caso for fazer deploy de outro ambiente, ex: github, precisa-se configurar as variaveis ambientes de acordo com o ambiente novo
+
+GITHUB ACTIONS ENVIROLMENT VARIABLES e configurar
+
+Agora yarn build
+Isso irá criar uma pasta com o projeto em arquivos estaticos (somente html,cssjs) na raiz do projeto
+
+Após isso
+firebase deploy no CMD
+
+E pronto, o projeto está hospedado no seguinte URL: https://letmeask---react-js.web.app
+
+
+

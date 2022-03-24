@@ -1,0 +1,393 @@
+O React é uma ferramenta criada pelo Facebook.
+O Facebook foi criado em cima dela, e depois os devs melhoraram ela.
+O React abrange muitas áreas com pouco código para várias aplicações.
+
+Outras ferramentas que usam React: Figma, Discord.
+
+O React utiliza HTML, CSS e JS.
+
+Vamos utilizar o Firebase e entendê-lo e o por que de usá-lo e quais serviços iremos usar.
+
+O Firebase foi criado pelo Google, com diversas ferramentas para facilitar o desenvolvimento web.
+Exemplo: Ferramenta de autenticação semi-pronta entre outras funcionalidades.
+
+O React é uma ferramenta de criação de interfaces (Front-End)
+
+Iremos configurar o ambiente para o React.
+
+Para tirar dúvidas no discord, podemos usar 3 aspas ```js (seu código aqui)```
+para formatar a mensagem no slack, semelhante a aparencia do vscode
+
+Caso o código for muito grande, podemos postar o código no gist.github.com
+e compartilhar a url do código para pedir ajuda pra galera no discord.
+
+Para melhor aprendizado, é bom entrar na comunidade e criar amizade com grupos e duplas para aprender melhor.
+
+
+Apresentação do Projeto **
+
+Letmeask (Deixe-me perguntar)
+
+O usuário irá logar com o google, poderá criar ou entrar em salas salas para perguntas
+Dará 1 nome para a sala e irá criar
+Ao criar a sala terá opções como poder encerrar a sala, ver o código da sala para compartilhar
+Também poderá visualizar as perguntas, e nas perguntas ela pode finalizar a pergunta (respondida), ou dar destaque ou excluir
+Modal para excluir a pergunta.
+
+O usuário poderá enviar a pergunta na sala com textarea.
+E não poderá enviar a pergunta caso não esteja logado com a conta google.
+ao enviar a pergunta, ela será exibida na sala.
+O usuário tambem pode dar like nas perguntas alheias para demonstrar a importância.
+
+
+Ambiente de Desenvolvimento - Ferramentas necessárias
+
+Nodejs + Npm
+Visual Studio Code
+Yarn
+No W10 o CMD que iremos usar é o PowerShell e instalaremos o Chocolatey que é um gerenciador de pacotes.
+E algumas extensões no Visual Studio Code, porém isso é opcional, são questões de temas e fontes das letras.
+
+
+
+Explicação da diferença de sites "convencionais" com html,css e js e de sites com React (SPA)
+
+No convencional, temos o servidor, e o usuário, que acessa o servidor e requisita uma cópia do projeto html+css+js
+A partir do Banco de dados, então o servidor busca os arquivos no banco de dados e devolve a página inteira html para o usuário.
+Ou seja, o servidor recarrega a página html inteira sempre que requisitada.
+E ao analisar isso, a aplicação pode ficar pesada.
+Em uma página que tem o header e o footer identicos por exemplo, não faz sentido a gente recarregar a página inteira novamente.
+
+Por isso foi desenvolvido o conceito SPA (Single Page Application)
+A ferramenta também usa o front-end(browser) e o back-end(servidor)
+No modelo de SPA, a aplicação é criada separadamente.
+Uma para o front e outra para o back-end (os códigos são isolados um do outro)
+A do Front-End terá toda a parte visual (html, css e js) ficarão dentro da aplicação front-end.
+O usuário irá acessá-la da mesma maneira da forma convencional.
+
+A do back-end será desenvolvida separadamente com node, php, python entre muitas outras.
+O front-end ao ser acessado, irá retornar o html normalmente
+O back-end ao ser acessado, irá retornar apenas os dados necessários para exibir no front-end a info desejada.
+por ex: fotos salvas, textos, dados dos contatos, etc.
+
+Os dados recebidos do back-end vem em formato JSON/CSV, ou seja, separados por ,
+EX: {nome: 'Renan', idade: 27, cidade: 'sbc', estado civil: 'casado', email: 'renan_berton@yahoo.com.br}
+{nome: 'Adriano', idade: 18, cidade: 'DF', estado civil: 'solteiro', email: 'adriano@yahoo.com.br}
+Essa estrutura de JSON é aceita por todas as ferramentas de desenvolvimento da atualidade.
+
+O back-end será responsável apenas pelo que se diz respeito ao back-end (que é fornecer os dados necessários salvos no DB)
+E o front-end será responsável apenas por interagir com o servidor, buscar os dados e transformá-los em dados para que
+sejam exibidos na tela.
+
+Ao usar o React deixamos a interação com o usuário muito melhor, mais fácil de usar, mais rápida de carregar, mais intuitivo.
+
+Ao usar o banco de dados para retornar o JSON somente, fica + flexível a implementação de outros sistemas
+como um app mobile, ou API'S, ou interação com outros sistemas, pois o JSON é aceito por toda tecnologia.
+
+
+Por que iremos utilizar o Firebase?
+
+É uma ferramenta sensacional, que trás diversas funcionalidades comuns prontas, para evitar que fiquemos codando coisas
+corriqueiras, ou quando precisamos subir um projeto para produção muito rápido.
+
+Serviços que iremos usar do Firebase
+Autenticação - Para a pessoa logar e só poder usar a aplicação caso esteja logada.
+Banco de dados - Conseguimos armazenar dados no Firebase, editar, alterar, deletar, manipular, etc direto da aplicação.
+
+O Firebase faz sentido em todas as aplicações?
+Não, o Firebase serve + para quando temos pressa de subir algum projeto muito rápido, como o uso de Bootstrap por ex.
+Não devemos abusar do seu uso.
+
+
+Iniciando com React
+
+Para iniciarmos um projeto com React, existem diversas alternativas, como templates prontos, etc.
+No caso, iremos utilizar a maneiras + simples para melhor absorção do conteúdo.
+
+Create React App
+
+NPM START -> para iniciar o projeto no browser
+
+1) Criei uma pasta no desktop React - Rocketseat para o projeto
+2) Abriremos o Powershell e CD até a pasta criada do projeto.
+3) Criei uma pasta Aula1
+4) Rodei o comando yarn create react-app letmeask --template typescript
+O comando cria um app react, com o nome 'letmeask' e a opção --template typescript é para usar o typescript invés do JS,
+O typescript é uma linguagem de tipagem, o professor deu o seguinte exemplo:
+Imagine que temos uma função que exibe uma mensagem de boas-vindas para o usuário.
+
+function boasVindas(user) {
+	return 'Seja bem vindo ${user.name};
+}
+
+
+Porém, um certo dia, você recebe uma task para exibir além do nome, a cidade e o UF do usuário.
+Ai surge a dúvida, como foi salva a cidade e o uf do usuario?
+Você pode jogar um console.log(user) para ver o que tem de informação salva no user.
+Porém, para isso, você terá que rodar o projeto, até a parte de boas-vindas para ver o que sai no console.log()
+O que irá gastar tempo.
+Mas surge outras dúvidas: Será que são informações obrigatórias no cadastro?
+Podem surgir uma série de dúvidas que podem gerar conflitos no código futuramente.
+
+Já com o TS, nós temos todas as informações necessárias para realizar a task.
+
+type User = {
+  name: string; //Todo usuário terá nome
+  endereco: {cidade: string; uf: string;} //Todo usuário terá cidade e uf (objeto de endereço)
+}
+
+
+function boasVindas(user: User) { // Diz que user é referenciado ao User lá de cima /\
+	return 'Seja bem vindo ${user.name}, de (${user.endereço.cidade}) - (${user.endereço.uf});
+}
+
+Desta forma, as chances de errar são praticamente 0.
+Pois temos todos os dados que precisamos p escrever o código certo, e sem perder tempo procurando console.log() pela aplicação.
+Só de colocar user. (ele já sugere as propriedades que tem no User do TS)
+Ao chamar a função também, nos parametros () ela já sugere as informações que são existentes naquela função.
+
+
+
+5)Cd na pasta letmeask
+6)Roda o comando: code . (para abrir no vs) - Também podemos abrir o projeto da forma tradicional.
+7)Ao rodar o Crate app do react, ele já gera alguns arquivos prontos na pasta do projeto: gitignore, 
+package.json (armazena todas as dependencias, nome e verão do nosso projeto)
+Readme, tsconfig.json - Configurações do TS (não iremos usar)
+yarn.lock (Ajuda o yarn a encontrar futuras dependencias que iremos instalar no projeto)
+nodemodules - é a pasta + pesada, e aonde fica todas as nossas dependencias do projeto.
+Pasta Src e puclib
+no public, iremos remover tudo e deixar só o html 
+na src, iremos deixar só o app.tsx, index.tsx e o react-app-env.d.ts
+
+Após enxugar o projeto de coisas desnecessárias para esse primeiro contato com o React.
+8)Abrir o terminal no vs code "yarn start" para rodar o projeto no browser com Liveshare já.
+
+Principais conceitos do React JS
+
+- Como é uma aplicação Single Page Application, o projeto só possuí 1 html para todo o projeto.
+- Mesmo usando o HTML, a interface da tela, será exibida pelo Javascript/Typescript.
+- Nada será add ao HTML, o que fará exibir será o JS.
+
+Como o h1 está sendo exibido na tela, sendo que não tem nada dentro da div id="root" ?
+
+- O index.html e o index.tsx são os primeiros arquivos a serem executados pela aplicação.
+- No index.tsv temos o método render(), que é usado apenas 1 vez na aplicação, ele tem o objetivo de renderizar/exibir algo
+dentro do html
+- Esse render, recebe um document.getElementById('root'); que é a div que está dentro do index.html
+- E dentro da div 'root' do html, ele renderiza o conteúdo desse render, que no caso é o App.tsx que contém o nosso h1
+com o Hello World!
+- O render pode receber uma tag html dentro dele direto, como um h1, não sendo necessário exibir uma função como o App.tsx
+- Quando trabalhamos com HTML dentro do JS, isso é chamado de JSX (Javascript e o X significa XML, que é a linguagem 
+que da base pro html no JS)
+- Como estamos usando TYPESCRIPT a extensão é TSX (Typescript + XML)
+
+
+COMPONENTES 
+
+- Todos os frameworks usam componentes.
+- Componentes são pedaços isolados de código, que quando juntos, formam a nossa aplicação.
+- Ex: sidebar, footer, header, nav-bar, cada parte pode ser um componente.
+- Um componente é uma função, que devolve um pedaço de HTML.
+- Não é recomendado criar componentes com classes e sim com funções, usar as classes apenas se o projeto já foi iniciado com 
+classes
+- TUDO É COMPONENTE, até o próprio react
+
+PROPRIEDADES
+
+- O conceito de propriedade é o conceito + fácil de entender no React.
+- As propriedades são informações que passamos ao componente para ele se comportar de certa maneira.
+- No html as propriedades são os atributos, por exemplo um href em um <a></a> 
+- Ou o target="_blank" que abrirá o link em uma nova aba.
+
+Para exportar um componente, a boa prática é exportar assim:
+
+export function Button() {
+	return (
+	<button>Clique Aqui</button>
+)
+}
+
+Pois caso a gente mude o nome de algo, dará erro, assim não é possível esquecermos algo.
+Se exportar da forma convencional, a importação dá certo mesmo estando errado o nome.
+Chamado de named export
+
+
+A gente exportou e exibiu o botão na tela,
+porém duplicamos o botão e queremos alterar o conteúdo dos botoes para cada botão
+Para isso nós criamos a tipagem/props do component:
+
+type ButtonProps = {
+    text: string;
+}
+
+E passaremos esse type no parâmetro da função:
+
+type ButtonProps = {
+    text?: string; //O ? Após o text, quer dizer que não é obrigatório, e caso não tenha nada, ele irá colocar o default \/
+}
+
+export function Button(props: ButtonProps) {
+    return (
+        <button>{props.text || 'Default'}</button> // Ele vai inserir o texto setado no componente, caso não seja add nada
+    ) 						   // Será Default o texto do bottão
+}
+
+
+Ai la no App.tsx ficou assim :
+
+import { Button } from './components/Button'
+
+function App() {
+  return (
+    <div>
+      <h1>Hello World</h1>          {/* Caso nada for add, o valor será o 'default' */}
+      <Button text="Clique Aqui" /> {/* O text foi add lá no props do Button.tsx */}
+      <Button text="Bolsonaro" />   {/* Que são os atributos do component */}
+      <Button text="Vai timao" /> {/* Podemos para cada botão, ter um conteudo diferente */}
+      <Button /> {/* Como esse não tem text="", o seu valor será Default /*}
+    </div>
+  );
+}
+
+export default App;
+
+As propriedades podem receber QUALQUER tipo de informação do JS.
+Caso queira passar uma propriedade number, bastaria por assim: <Button text = {1} e trocar la no props string por number
+E assim para qualquer tipo de dado: boolean, array<string> ou array<number> ou string[] ou number[] <- para arrays
+Existe uma propriedade especial no React que todo componente tem acesso:
+
+Children
+
+- É quando queremos passar um componente igual uma tag, com abertura e fechamento, diferente do <Button />
+- Seria +- assim <button>Clique Aqui</button>
+- E teriamos que alterar a props para children ao invés de text
+
+Com os componentes e as propriedades conseguimos desenvolver QUALQUER interface somente com eles.
+Porém para dar vida ao site, precisamos dos estados:
+
+ESTADOS
+
+O conceito de Estado nasceu junto com a linguagem do React JS
+Estado é uma informação mantida por um componente de dentro do React.
+Sempre que tiver algum componente que a sua informação irá ser alterada pelo uso do usuário no componente, ex: um clique
+Sempre que uma informação não for mantida por TODA a aplicação, ela é alterada pelo estado.
+
+EX :
+
+export function Button() {
+    let cont = 0; // Setamos um contador que começa do 0
+
+# E fazemos uma função para incrementar +1 e exibir no console.
+    function incremento() {
+        cont += 1;
+        console.log(cont);
+    }
+
+    return (
+        <button onClick={incremento}>0</button> /* Caso nada for add, será default o conteudo do botão */
+    )           # Ao clicar no componente, a função onClick irá acionar a função incremento, que irá exibir no console o click
+}
+
+
+Essa função acima exibe a alteração no console apenas, para alterar no HTML teremos que osar o useState
+Que fica +- assim:
+
+import { useState } from "react"; // Importa-se o useState
+
+export function Button() {
+    const [cont, setCounter] = useState(0) // o useState possui 2 parametros
+
+    function incremento() {
+	setCounter(cont + 1) // Aqui o setCounter tem o papel de alterar o numero no html
+        console.log(cont);   // Aqui exibe o valor no console
+    }
+
+    return (
+        <button onClick={incremento}>{cont}</button> /* Ao clicar no botão a função incremento será acionada */
+    )
+}
+
+No React existe um conceito chamado imutabilidade:
+
+IMUTABILIDADE 
+
+- Significa que a partir do momento que uma variável foi criada dentro do estado de um componente
+ela não sofre alterações, sempre criamos uma nova informação em cima da informação anterior.
+- A gente nunca modifica informações, sempre criamos novas informações, igual no exemplo acima
+O useState não é alterado, nós criamos uma nova variavel que irá pegar o valor antigo e alterá-lo na nova variavel apenas
+
+
+Conceito Projeto Firebase
+
+- Iremos usar o Firebase a partir de agora.
+- Acessamos o site: https://console.firebase.google.com/?hl=pt&pli=1
+- Criar um projeto ( Pode colocar o nome que preferir)
+- O Firebase nos oferece os serviços de: Autenticação, 2 banco de dados, armazenamento, hospedagem, funções e machine learning.
+Monitoramento de erros, google analytics, engajamento, entre muitos outros.
+- Autenticação / Primeiros passos
+- Escolhemos a plataforma de autenticação que desejamos (Google), porém tem outras várias: Yahoo, hotmail, github, 
+Microsoft, Facebook, e-mail e senha, etc.
+- A autenticação só funcionará, nos domínios definidos no firebase, caso for upar o projeto em outro dominio, deve-se add ele
+na parte dos dominios, se não o google entende que não é um dominio seguro.
+- Na página Users, conseguimos visualizar os usuários cadastrados na plataforma.
+
+- A próxima ferramenta do Firebase que iremos usar é o RealTime Database (NoSql)
+- Caso for desenvolver uma aplicação muito complexa, melhor usar o Firestone database.
+- Criar Database/Pode deixar USA, Iniciar no modo bloqueado (Isso faz com que não conseguimos ler nem escrever nada no DB)
+- O database é no estilo cascata.
+
+- Para linkar o React com o Firebase, Vamos em visão geral do projetos, Na parte (Comece add o Firebase ao seu projeto)
+Escolhemos a opção web.
+- Nomear o projeto e criar app.
+- Existem 2 opções para instalar o Firebase no projeto, via NPM (comando) ou via scripts(colar o scripts no código)
+- Iremos usar a opção NPM.
+
+- Na pasta do projeto, na pasta letmeask (no CMD), rodamos o comando yarn add firebase para instalar.
+- Na pasta src, criamos uma pasta services, e dentro da services um arquivo firebase.ts para configura-lo.
+- No arquivo firebase.ts colamos o código de configuração que é fornecido no firebase nas Configurações do Projeto.
+- No mesmo arquivo firebase.ts importamos a autenticação e o db (import 'firebase/auth') (import 'firebase/database');
+- Como vamos upar nosso projeto no github, precisamos esconder nossas informações de configuração( Apikey, etc).
+- Para isso, iremos usar uma env local para guardar os dados sensiveis.
+- Então na pasta raiz do projeto, criamos um arquivo .env.local e inserimos os seguintes dados:
+
+API_KEY="AIzaSyBZZgRD34M28VUrJuBEHWiF3N6A7SDaIfQ";
+AUTH_DOMAIN="letmeask---react-js.firebaseapp.com";
+DATABASE_URL="https://letmeask---react-js-default-rtdb.firebaseio.com";
+PROJECT_ID="letmeask---react-js";
+STORAGE_BUCKET="letmeask---react-js.appspot.com",
+MESSAGING_SENDER_ID="579640071084",
+APP_ID="1:579640071084:web:62412a960bf0701b472009";
+
+
+
+
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth" // New import
+import { getDatabase, ref, push, get, onValue } from "firebase/database";
+
+//import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js";
+
+// Configurações do Firebase. Outra pessoa não pode acessar, então usamos
+// variáveis locais em um .env.local para que fiquem só na minha máquina
+const firebaseConfig = {
+    apiKey: process.env.REACT_APP_API_KEY,
+    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+    databaseURL: process.env.REACT_APP_DATABASE_URL,
+    projectId: process.env.REACT_APP_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+    appId: process.env.REACT_APP_APP_ID
+};
+
+const firebase = initializeApp(firebaseConfig);
+
+const auth = getAuth(firebase);
+const database = getDatabase(firebase);
+
+export { onValue, get, push, ref, auth, database, GoogleAuthProvider, signInWithPopup }
+
+Comando usado pra criar o React-app
+
+npx create-react-app my-app
+cd my-app
+npm start

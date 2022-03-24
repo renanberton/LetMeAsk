@@ -1,0 +1,445 @@
+Nessa aula iremos usar a autenticação e o banco de dados do firebase.
+
+É bom deixar os serviços do firebase configurados, pois fica + fácil de usar os outros serviços.
+
+O database do firebase só aceita 100 usuários ao mesmo tempo conectados no banco de dados.
+
+
+Desenvolvendo a home
+
+- Temos as telas do figma a nossa disposição:
+
+https://www.figma.com/community/file/1009824839797878169
+
+e iremos fazer a tela de home.
+
+Criamos na pasta src uma pasta pages/
+
+dentro da page, criamos Home.tsx
+
+Baixar as imgs do site e colocá-las dentro da pasta src/ criar uma pasta assets e dentro dela images
+src/assets/images
+
+Para add images na página, no React, não é da forma tradicional src="../src/assets/images/illustration.svg"
+PAra add imagens, precisamos importar elas na página
+import illustrationImg from '../assets/images/illustration.svg'
+
+Ai usamos a variável illustrationImg no src da imagem:
+img src={illustrationImg} alt="Imagem de ilustração" />
+
+Deu erro de importação, então usei o seguinte código.
+Na mesma pasta assets das imgs, criei um arquivo index.d.ts e colei isso
+
+declare module "\*.svg" {
+  import React = require("react");
+  export const ReactComponent: React.SFC<React.SVGProps<SVGSVGElement>>;
+  const src: string;
+  export default src;
+}
+
+declare module "\*.jpg" {
+  const content: string;
+  export default content;
+}
+
+declare module "\*.png" {
+  const content: string;
+  export default content;
+}
+
+declare module "\*.json" {
+  const content: string;
+  export default content;
+}
+
+e deu bom
+
+deu alguns erros porém resolvidos
+
+
+Fomos importando as imagens na página home, e criamos uma pasta styles dentro da pasta src
+dentro da styles, criamos um global.css e definimos um background cinza para o body
+
+importamos o styles no index.tsx import './styles/global.css'
+Também instalamos o sass > yarn add node-sass
+
+Importamos Roboto e Poppins do google fonts
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+Criamos um scss 'auth', estilizamos a página e importamos o auth.scss na Home.tsx
+pois não tem necessidade de importar no index.html
+
+Para criar uma classe no css no React, não usamos da maneira convencional class="", usamos className="main-content" por ex
+
+Fazer curso de SASS para absorver melhor a mecanica
+
+Como o botão Entrar na sala, o estilo dele aparece em outras páginas, com textos e rotas diferentes, iremos criar
+um componente para ele
+
+
+
+Para criar o elemento, iremos usar o props do próprio react que devolve pra gente os atributos que cabem no button
+
+import { ButtonHTMLAttributes } from 'react';
+
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
+
+
+export function Button(props: ButtonProps) {
+    return (
+        <button className='button' {...props} />
+    )
+}
+
+Importamos o Button na Home.tsx => 
+import { Button } from '../components/Button'
+
+E agora na página styles, criamos o button.scss para estilizar este botão
+No Button.tsx importamos a folha de estilos - > import '../styles/button.scss'
+
+Página de autenticação finalizada.
+
+Agora iremos criar a página de criação de salas
+
+em Pages criaremos NewRoow.tsx
+
+Como a página é bem parecida com a home, copiamos e colamos a Home.tsx na NewRoom.tsx e alteramos o nome da Função
+para NewRoom() e iremos retirando o que não faz parte da página de criação de salas
+
+Para visualizarmos a página nova no browser, vamos até o App.tsx e alteramos de <Home /> para <NewRoom />
+
+Ai sim, visualizando a página, estilizamos de acordo com o figma
+
+Para navegarmos entre as páginas, iremos usar o conceito de roteamento do react (Rotas)
+Iremos instalar o React-Router-Dom com o comando yarn add react-router-dom
+E caso fique com erro na hora de importar, instalamos o yarn add types/react-router-dom -D
+Iremos importar import { Route, BrowserRouter } from 'react-router-dom' no app.tsx
+Aonde nós colocavamos o <Home /> ou o <NewRoom />
+Iremos deixar o <BrowserRouter envolvenvo tudo.
+
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/" element={<NewRoom />} />
+      </Routes>
+    </BrowserRouter>
+
+Cada versão de Router usa de uma forma, verificar quando for usar, pois deu erro com a versão do curso.
+
+Agora iremos fazer uma navegação entre as páginas, para isso iremos importar : import { useNavigate} from 'react-router-dom'
+na Home.tsx
+
+dentro da função Home() [
+antes do return
+criamos uma variavel const history = useNavigate();
+e criamos uma função:
+
+    const history = handleCreateRoom();
+
+    function handleCreateRoom() {
+        history('/rooms/new');
+    }
+
+
+Ai no Button Crie sua sala com o google, add o atributo onClick={handleCreateRoom) que é o nome da nossa função
+que mandará a gente para /rooms/new
+
+Na NewRoom.tsx importamos : import { Link } from 'react-router-dom';
+
+No p "Quer entrar numa sala existente? trocamos o <a> por Link e o href por to="/"
+
+Ficando assim : 
+<p>
+  Quer entrar em uma sala existente? <Link to="/">clique aqui</Link>
+</p>
+
+
+Finalizamos o roteamento inicial
+
+Agora iremos de fato fazer a autenticação com o firebase
+
+Vamos para a home.tsx
+
+Para o usuário criar uma sala, ele precisará estar logado, então importamos o firebase e o auth
+import { auth, firebase } from '../services/firebase'
+e criamos a função:
+
+function handleCreateRoom() {
+const provider = new firebase.auth.GoogleAuthProvider();
+auth.signInWithPopup(provider).then(result => {
+console.log(result);
+})
+
+e clicando no botão da nossa página, já abre um pop-up para logar com uma conta da google
+
+Porém, caso a pessoa acesse a url da NewRoom ele consegue acessar tranquilamente por enquanto.
+
+precisamos saber se o usuário está logado ou não na página NewRoom
+
+Para isso, iremos aprender o conceito de contexto no React JS
+
+Precisamos compartilhar informações por todos os componentes da nossa aplicação.
+
+CONTEXTOS
+
+São formas de compartilhar informações entre 2 ou + componentes do nosso projeto, pode ser qualquer coisa, texto, objeto, array
+
+No App.tsx importamos: import { createContext } from 'react'
+
+export const TestContext = createContext('');  ** Exportamos para usar em outros compontentes
+
+E envolta do nosso BrowserRouter usamos a TestContext
+
+    <BrowserRouter>
+      <TestContext.Provider value={'Teste'}> ** Precisa ter um value se não da erro, é o nosso contexto o value
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/rooms/new" element={<NewRoom />} />
+        </Routes>
+      </TestContext.Provider>
+    </BrowserRouter>
+
+Na Home.tsx
+
+importamos : 
+import { TestContext } from '../App';
+import { useContext } from 'react';
+const value = useContext(TestContext);
+
+E botamos em um h1 para testar, <h1>{value}</h1>
+E esse h1 terá o valor 'Teste' que foi criado lá em cima
+ou seja, conseguimos compartilhar um valor por várias páginass
+
+    const { value, setValue } = useContext(TestContext);
+
+No App.tsx importamos: import { createContext, useState } from 'react'
+  const [value, setValue] = useState('Teste');
+
+    <BrowserRouter>
+      <TestContext.Provider value={{ value, setValue }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/rooms/new" element={<NewRoom />} />
+        </Routes>
+      </TestContext.Provider>
+    </BrowserRouter>
+
+Agora temos tanto o value, e tambem podemos alterar o valor do value, com o setValue
+tambem podemos compartilhar funções para modificar os valores
+E é isso que usaremos para fazer a autenticação, e ter o valor de estar logado em todas as páginas, ou se deslogou
+Podemos ter o valor de estar logado = True, e caso o usuario deslogue, volte para False
+
+Apagamos tudo do projeto, pois era só para entender o conceito.
+
+CONTEXTO DE AUTENTICAÇÃO
+
+A informação que queremos compartilhar entre os componentes, é a informação de usuário (dados)
+
+App.tsx
+
+Importamos o auth, firebase from services/firebase
+
+criamos a variavel const [user, setuser] = useState<User>();
+
+uma função signInWithGoogle() {
+const provider = new firebase.auth.GoogleAuthProvider();
+
+O auth abrirá um popup para o usuário logar com sua conta google
+Se o usuário logar, pegaremos o nome, a foto e o id com as constante displayName, photoURL e Uid.
+Caso o usuário não logar, ou faltar algum dado, retornará Missing Information from Google Account
+
+    auth.signInWithPopup(provider).then(result => {
+      if (result.user) {
+        const { displayName, photoURL, uid } = result.user
+
+        if (!displayName || !photoURL) {
+          throw new Error('Missing Information from Google Account');
+        }
+
+        /* Seta a informação do Usuário */
+	Ai a função setUser irá guardar os dados id, nome e avatar colhidos anteriormente.
+        setUser({
+          id: uid,
+          name: displayName,
+          avatar: photoURL
+        })
+      }
+    })
+
+  }
+
+Após isso, colocaremos a função criada AuthContext
+
+também criaremos 1 type para User e 1 para o AuthContextType
+
+Para tipar os dados que serão coletados
+type User = {
+  id: string;
+  name: string;
+  avatar: string;
+}
+
+Contexto de autenticação
+type AuthContextType = {
+  user: User | undefined;
+  signInWithGoogle: () => void;
+}
+
+Depois, envolvemos as rotas com o AuthContext.Provider que é a autenticação, que estará presente em todas as pages
+
+    <BrowserRouter>
+      <AuthContext.Provider value={{ user, signInWithGoogle }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/rooms/new" element={<NewRoom />} />
+        </Routes>
+      </AuthContext.Provider>
+    </BrowserRouter >
+
+
+Ao fazer o login, e voltar para a página de login, ele nem abre mais o popup pois já reconhece que o usuário está logado
+
+RECUPERAR O ESTADO DE AUTENTICAÇÃO
+
+Se der F5 na página, ele perde a informação do usuário, e reconhece que o usuário não está logado
+
+Um estado State, só funciona enquanto o usuário está usando o app, se sair ele perde as infos.
+
+No app.tsx importamos o useEffect
+
+Ele é usado para disparar uma função sempre que algo acontecer.
+
+Esse algo pode ser uma info que mudou, ou sempre que um certo componente for exibido em tela, etc.
+
+o useEffect recebe 2 parametros
+O primeiro é a função que desejamos e o segundo sempre vai ser um array []
+
+É um eventListener change, caso houver mudanças na autenticação, ele dispara a função
+Se o usuário estiver logado, ele continua com os dados do usuário mesmo dando F5
+useEffect(() => {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        const { displayName, photoURL, uid } = user
+
+        /* Se não, retornará a mensagem 'Missing Information from Google Account */
+        if (!displayName || !photoURL) {
+          throw new Error('Missing Information from Google Account');
+        }
+
+        /* Seta a informação do Usuário */
+        setUser({
+          id: uid,
+          name: displayName,
+          avatar: photoURL
+        })
+
+CRIANDO HOOK DE AUTENTICAÇÃO
+
+Envolvemos o auth.onAuthStateChanged em uma variável para não ficar o eventlistener rodando para sempre
+e no final da função return () => {
+unsubscribe();
+}
+Para que o eventListener não fique rodnado para sempre no app e evitando assim bugs
+
+Agora iremos levar essas funções para outro arquivo, para não ficar pesado o App.tsx, pos se houver mais autenticaçaõ
+o App.tsx ficará bastante poluído
+
+import { createContext, ReactNode, useEffect, useState } from 'react';
+import { auth, firebase } from '../services/firebase'
+
+/* Pegará os dados do usuário cadastrado */
+export const AuthContext = createContext({} as AuthContextType);
+
+/* Tipagem para User */
+type User = {
+    id: string;
+    name: string;
+    avatar: string;
+}
+
+/* Tipagem para o os dados de Autenticação do Usuário */
+type AuthContextType = {
+    user: User | undefined;
+    signInWithGoogle: () => Promise<void>;
+}
+
+
+/* Tipagem para passar um children como props, importamos a funcionalidade ReactNode from 'react'
+Para podermos passar um children como props */
+type AuthContextProviderProps = {
+    children: ReactNode;
+}
+
+o AuthContext.tsx ficará assim
+
+/* Aqui usamos a tipagem do AuthContextProviderProps para usar o reactnode
+export function AuthContextProvider(props: AuthContextProviderProps) {
+
+    /* Variáveis para armazenar os dados do usuário */
+    /* Tipagem feita para o User     \/ exibir os dados que serão coletados */
+    const [user, setUser] = useState<User>();
+
+    /* O useEffect recebe 2 parâmetros, a função que desejamos disparar
+      E um array
+      É um eventListener change, se houver mudanças, ele dispara a função 
+      de autenticação e fica com os dados salvos, mesmo dando F5
+    */
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (user) {
+                const { displayName, photoURL, uid } = user
+
+                /* Se não, retornará a mensagem 'Missing Information from Google Account */
+                if (!displayName || !photoURL) {
+                    throw new Error('Missing Information from Google Account');
+                }
+
+                /* Seta a informação do Usuário */
+                setUser({
+                    id: uid,
+                    name: displayName,
+                    avatar: photoURL
+                })
+            }
+        })
+
+        return () => {
+            unsubscribe();
+        }
+    }, [])
+
+    /* Função Logar com o Google */
+    async function signInWithGoogle() {
+        /* Variável que fará a autenticação com o Google */
+        /* E outra que exibirá o Pop-up para logar */
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const result = await auth.signInWithPopup(provider);
+
+        /* Se o usuário logar, as variáveis displayName, photoURL e uid pegarão os valores contidos em user. */
+        if (result.user) {
+            const { displayName, photoURL, uid } = result.user
+
+            /* Se não, retornará a mensagem 'Missing Information from Google Account */
+            if (!displayName || !photoURL) {
+                throw new Error('Missing Information from Google Account');
+            }
+
+            /* Seta a informação do Usuário */
+            setUser({
+                id: uid,
+                name: displayName,
+                avatar: photoURL
+            })
+        }
+    }
+    return (
+        <AuthContext.Provider value={{ user, signInWithGoogle }}>
+            {props.children} // Foi usar o ReactNode para poder passar o props.children
+        </AuthContext.Provider>
+
+
+    )
+}
